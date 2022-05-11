@@ -1,5 +1,8 @@
 import { calcStakePoolApy, calcLpApy } from '../src';
 
+const SECOND = 1000;
+jest.setTimeout(10 * SECOND);
+
 describe('apy testing', () => {
   it('stake pool apy & lp apy', async () => {
     const stakePoolApy = await calcStakePoolApy();
