@@ -176,7 +176,7 @@ export async function stakingRewardsDiff(accountId: string) {
   //   'diff [subgraph with fee - indexer] =\t %s NEAR',
   // );
   return rewards_subgraph_with_fee
-      .minus(rewards_indexer)
-      .div(YOCTONEAR)
-      .toFixed()
+    .minus(rewards_indexer)
+    .div(YOCTONEAR)
+    .toFixed();
 }

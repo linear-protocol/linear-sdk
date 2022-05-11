@@ -12,15 +12,11 @@ describe('stake', () => {
       'linguists.near',
     ];
     for (const accountId of accountIds) {
-      const {
-        id,
-        startTime,
-        __typename
-      } = await queryStakeTime(accountId);
-      expect(id).toContain(".near");
+      const { id, startTime, __typename } = await queryStakeTime(accountId);
+      expect(id).toContain('.near');
       expect(Number(startTime)).not.toBeNaN();
-      expect(__typename).toEqual("Account");
-      expect(await stakingRewardsDiff(accountId)).not.toBeUndefined()
+      expect(__typename).toEqual('Account');
+      expect(await stakingRewardsDiff(accountId)).not.toBeUndefined();
     }
   });
 });
