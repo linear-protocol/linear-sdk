@@ -10,7 +10,7 @@ import {
 async function getLatestFeesPayed(): Promise<LpApies> {
   const getLatestQuery = `
     query {
-      lpApies (first: 1, orderBy: timeStamp, orderDirection: desc){
+      totalSwapFees (first: 1, orderBy: timeStamp, orderDirection: desc){
         id
         timeStamp
         feesPayed
@@ -22,13 +22,13 @@ async function getLatestFeesPayed(): Promise<LpApies> {
   if (queryData == null) {
     throw new Error('fail to query latest lpApies');
   }
-  return queryData.lpApies[0];
+  return queryData.totalSwapFees[0];
 }
 
 async function getTargetTimeFeesPayed(timeStamp: number) {
   const getBeforeFeesPayed = `
     query {
-      lpApies (first: 1, where: {timeStamp_gt: "${timeStamp}"} ){
+      totalSwapFees (first: 1, where: {timeStamp_gt: "${timeStamp}"} ){
         id
         feesPayed
         timeStamp
@@ -39,7 +39,7 @@ async function getTargetTimeFeesPayed(timeStamp: number) {
   if (queryData == null) {
     throw new Error('fail to query before lpApies');
   }
-  return queryData.lpApies[0];
+  return queryData.totalSwapFees[0];
 }
 
 export async function calcLpApy(): Promise<string> {

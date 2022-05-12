@@ -11,5 +11,6 @@ describe('apy testing', () => {
     const lpApy = await calcLpApy();
     expect(Number(lpApy)).toBeLessThan(0.3);
     expect(Number(lpApy)).toBeGreaterThan(0);
+    // console.log({stakePoolApy, lpApy})
   });
 });
