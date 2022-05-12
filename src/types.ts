@@ -43,19 +43,19 @@ export interface LiNearContract extends Contract {
   get_liquidity_pool_config: () => Promise<LiquidityPoolConfig>;
 }
 
-export interface LpApies {
+export interface TotalSwapFees {
   id: string;
-  timeStamp: number;
-  feesPayed: string;
+  timestamp: number;
+  feesPaid: string;
 }
 
 export interface LatestPriceFromContract {
   price: number;
-  timeStamp: number;
+  timestamp: number;
 }
 
 export interface StakeTime {
   id: string;
-  startTime: string;
+  firstStakingTime: string;
   __typename: string;
 }

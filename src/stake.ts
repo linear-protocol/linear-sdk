@@ -1,20 +1,19 @@
 import { YOCTONEAR } from './consts';
 import { BigNumber } from 'bignumber.js';
+import { client, loadContract } from './helper';
+import { StakeTime } from './types';
 import {
-  client,
-  loadContract,
   queryLatestPriceFromContract,
   queryLatestPriceFromSubgraph,
   queryPriceBefore,
-} from './helper';
-import { StakeTime } from './types';
+} from './price';
 
 export async function queryStakeTime(accountid: string): Promise<StakeTime> {
   const getStakeTimeQuery = `
     query {
-      accounts (fisrt: 1, where: {id: "${accountid}"} ){
+      users (first: 1, where: {id: "${accountid}"} ){
       id
-      startTime
+      firstStakingTime
     }
   }`;
   // console.log(getStakeTimeQuery)
@@ -23,25 +22,25 @@ export async function queryStakeTime(accountid: string): Promise<StakeTime> {
   if (queryData == null) {
     throw new Error('fail to query price');
   }
-  // const timeStampInt = Number(queryData.accounts[0].startTime.toString());
-  // const unixTimeStamp = timeStampInt / 1000000;
-  // const date = new Date(unixTimeStamp);
-  // console.log('user first stake time: ', date);
-  return queryData.accounts[0];
+  // const timestampInt = Number(queryData.users[0].firstStakingTime.toString())
+  // const unixTimestamp = timestampInt / 1000000
+  // const date = new Date(unixTimestamp)
+  // console.log("user first stake time: ", date)
+  return queryData.users[0];
 }
 
 async function getTransferIncome(accountId: string) {
   const getTransferEvent = `
     query {
-      accounts(first: 1,where:{id:"${accountId}"}) {
+      users(first: 1, where:{id:"${accountId}"}) {
         id
         transferedIn {
           amount
-          timeStamp
+          timestamp
         }
         transferedOut {
           amount
-          timeStamp
+          timestamp
         }
       }
   }`;
@@ -51,42 +50,41 @@ async function getTransferIncome(accountId: string) {
     throw new Error('fail to query transfer event');
   }
   const latestPrice = await queryLatestPriceFromContract();
-  const transferIn = queryData.accounts[0].transferedIn;
-  const transferOut = queryData.accounts[0].transferedOut;
+  const transferIn = queryData.users[0].transferedIn;
+  const transferOut = queryData.users[0].transferedOut;
   let transferInReward = 0;
   let transferOutReward = 0;
   for (let i in transferIn) {
-    let tempPrice = await queryPriceBefore(transferIn[i].timeStamp);
+    let tempPrice = await queryPriceBefore(transferIn[i].timestamp);
     let tmpReward =
       transferIn[i].amount * (latestPrice.price - tempPrice.price);
     transferInReward += tmpReward;
   }
   for (let i in transferOut) {
-    let tempPrice = await queryPriceBefore(transferOut[i].timeStamp);
+    let tempPrice = await queryPriceBefore(transferOut[i].timestamp);
     let tmpReward =
       transferOut[i].amount * (latestPrice.price - tempPrice.price);
     transferOutReward += tmpReward;
   }
-  // console.log("transfer reward: ",transferInReward - transferOutReward)
   return transferInReward - transferOutReward;
 }
 
 async function getUserIncome(accountId: string, flag: boolean) {
   const getIncomeQuery = `
     query {
-      accounts (fisrt: 1, where: {id: "${accountId}"} ){
+      users (first: 1, where: {id: "${accountId}"} ){
         id
         mintedLinear
         stakedNear
-        unstakeLinear
+        unstakedLinear
         unstakeReceivedNear
-        feesPayed
+        feesPaid
       }
     }`;
-  //console.log(finalQuery)
+  // console.log(getIncomeQuery)
   let data = await client.query(getIncomeQuery).toPromise();
   //console.log(data)
-  let queryData = data.data.accounts[0];
+  let queryData = data.data.users[0];
   if (queryData == null) {
     throw new Error('fail to query user');
   }
@@ -94,9 +92,9 @@ async function getUserIncome(accountId: string, flag: boolean) {
   const price1 = new BigNumber(latestPrice.price);
   const mintedLinear = new BigNumber(queryData.mintedLinear);
   const stakedNear = new BigNumber(queryData.stakedNear);
-  const unstakedLinear = new BigNumber(queryData.unstakeLinear);
+  const unstakedLinear = new BigNumber(queryData.unstakedLinear);
   const unstakedGetNEAR = new BigNumber(queryData.unstakeReceivedNear);
-  const fessPayed = new BigNumber(queryData.feesPayed);
+  const fessPaid = new BigNumber(queryData.feesPaid);
   const currentLinear = mintedLinear.minus(unstakedLinear);
   const transferReward = await getTransferIncome(accountId);
   const tfReward = new BigNumber(transferReward);
@@ -106,25 +104,17 @@ async function getUserIncome(accountId: string, flag: boolean) {
     .minus(stakedNear)
     .plus(unstakedGetNEAR)
     .plus(tfReward);
-  // console.log("calc [subgraph]",
-  //   mintedLinear.toString(),
-  //   unstakedLinear.toString(),
-  //   price1.toString(),
-  //   stakedNear.toString(),
-  //   unstakedGetNEAR.toString()
-  // );
-
   if (flag) {
-    const rewardFinal = reward.plus(fessPayed);
+    const rewardFinal = reward.plus(fessPaid);
     // console.log(
     //   'rewards [subgraph with fee] =\t\t %s NEAR',
-    //   rewardFinal.div(10 ** 24).toFixed(8)
+    //   rewardFinal.div(YOCTONEAR).toFixed(8)
     // );
     return rewardFinal;
   } else {
     // console.log(
     //   'rewards [subgraph without fee] =\t %s NEAR',
-    //   reward.div(10 ** 24).toFixed(8)
+    //   reward.div(YOCTONEAR).toFixed(8)
     // );
     return reward;
   }

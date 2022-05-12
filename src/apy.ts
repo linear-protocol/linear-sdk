@@ -1,43 +1,41 @@
-import { LpApies } from './types';
+import { TotalSwapFees } from './types';
 import { BigNumber } from 'bignumber.js';
-import {
-  client,
-  getSummaryFromContract,
-  queryLatestPriceFromSubgraph,
-  queryPriceBefore,
-} from './helper';
+import { client, getSummaryFromContract } from './helper';
+import { queryLatestPriceFromSubgraph, queryPriceBefore } from './price';
 
-async function getLatestFeesPayed(): Promise<LpApies> {
+async function getLatestFeesPayed(): Promise<TotalSwapFees> {
   const getLatestQuery = `
     query {
-      totalSwapFees (first: 1, orderBy: timeStamp, orderDirection: desc){
+      totalSwapFees (first: 1, orderBy: timestamp, orderDirection: desc){
         id
-        timeStamp
-        feesPayed
+        timestamp
+        feesPaid
       }
     }
   `;
   let data = await client.query(getLatestQuery).toPromise();
   let queryData = data.data;
   if (queryData == null) {
-    throw new Error('fail to query latest lpApies');
+    throw new Error('fail to query latest totalSwapFees');
   }
   return queryData.totalSwapFees[0];
 }
 
-async function getTargetTimeFeesPayed(timeStamp: number) {
+async function getTargetTimeFeesPayed(
+  timestamp: number
+): Promise<TotalSwapFees> {
   const getBeforeFeesPayed = `
     query {
-      totalSwapFees (first: 1, where: {timeStamp_gt: "${timeStamp}"} ){
+      totalSwapFees (first: 1, where: {timestamp_gt: "${timestamp}"} ){
         id
-        feesPayed
-        timeStamp
+        feesPaid
+        timestamp
      }
   }`;
   let data = await client.query(getBeforeFeesPayed).toPromise();
   let queryData = data.data;
   if (queryData == null) {
-    throw new Error('fail to query before lpApies');
+    throw new Error('fail to query before totalSwapFees');
   }
   return queryData.totalSwapFees[0];
 }
@@ -52,11 +50,11 @@ export async function calcLpApy(): Promise<string> {
   const tmpLpTVL = tmpLinearShares.times(tmpPrice).plus(tmpNEARShares);
   const tmpFeesPayed = await getLatestFeesPayed();
   const targetTimeForFees =
-    Number(tmpFeesPayed.timeStamp) - 3 * 24 * 60 * 60 * 1000000000;
+    Number(tmpFeesPayed.timestamp) - 3 * 24 * 60 * 60 * 1000000000;
   const initFeesPayed = await getTargetTimeFeesPayed(targetTimeForFees);
   const days = 3; // secsCurrent.minus(secsInit).div(24).div(60*60).div(1000000000)
-  const feesCurrent = new BigNumber(tmpFeesPayed.feesPayed);
-  const feesInit = new BigNumber(initFeesPayed.feesPayed);
+  const feesCurrent = new BigNumber(tmpFeesPayed.feesPaid);
+  const feesInit = new BigNumber(initFeesPayed.feesPaid);
   const lpApy = feesCurrent
     .minus(feesInit)
     .div(days)
@@ -70,18 +68,16 @@ export async function calcLpApy(): Promise<string> {
 export async function calcStakePoolApy() {
   const latesdPrice = await queryLatestPriceFromSubgraph();
   const targetTime =
-    Number(latesdPrice.timeStamp) - 30 * 24 * 60 * 60 * 1000000000;
+    Number(latesdPrice.timestamp) - 30 * 24 * 60 * 60 * 1000000000;
   const price30DaysAgo = await queryPriceBefore(targetTime);
   const price1 = new BigNumber(latesdPrice.price);
   const price2 = new BigNumber(price30DaysAgo.price);
-  const timeGap = new BigNumber(
-    Number(latesdPrice.timeStamp - price30DaysAgo.timeStamp)
-  );
+  const days = new BigNumber(24 * 60 * 60 * 1000000000 * 30);
   const times1 = new BigNumber(24 * 60 * 60 * 1000000000 * 365);
   const apy = price1
     .minus(price2)
+    .div(price2)
     .times(times1)
-    .div(timeGap);
-  // Staking APY
+    .div(days);
   return apy.toFixed();
 }
