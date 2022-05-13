@@ -1,16 +1,27 @@
-import { calcStakePoolApy, calcLpApy } from '../src';
+import {
+  calcStakePoolApy,
+  calcLpApy,
+  changeSDKEnvironment,
+  SDK_ENV,
+} from '../src';
 
 const SECOND = 1000;
-jest.setTimeout(10 * SECOND);
+jest.setTimeout(20 * SECOND);
 
 describe('apy testing', () => {
   it('stake pool apy & lp apy', async () => {
-    const stakePoolApy = await calcStakePoolApy();
-    expect(Number(stakePoolApy)).toBeLessThan(0.3);
-    expect(Number(stakePoolApy)).toBeGreaterThan(0);
-    const lpApy = await calcLpApy();
-    expect(Number(lpApy)).toBeLessThan(0.3);
-    expect(Number(lpApy)).toBeGreaterThan(0);
-    // console.log({stakePoolApy, lpApy})
+    async function apyTesting() {
+      const stakePoolApy = await calcStakePoolApy();
+      expect(Number(stakePoolApy)).toBeLessThan(0.3);
+      expect(Number(stakePoolApy)).toBeGreaterThanOrEqual(0);
+      const lpApy = await calcLpApy();
+      expect(Number(lpApy)).toBeLessThan(0.3);
+      expect(Number(lpApy)).toBeGreaterThanOrEqual(0);
+    }
+
+    changeSDKEnvironment(SDK_ENV.MAINNET);
+    await apyTesting();
+    changeSDKEnvironment(SDK_ENV.TESTNET);
+    await apyTesting();
   });
 });

@@ -2,7 +2,7 @@ import { ConnectConfig, keyStores } from 'near-api-js';
 
 const keyStore = new keyStores.InMemoryKeyStore();
 
-const config: ConnectConfig = {
+const connectConfig: ConnectConfig = {
   networkId: 'mainnet',
   keyStore, // optional if not signing transactions
   // nodeUrl: "https://rpc.mainnet.near.org",
@@ -13,8 +13,12 @@ const config: ConnectConfig = {
   headers: {},
 };
 
-const APIURL = 'https://api.thegraph.com/subgraphs/name/linear-protocol/linear';
+const apiUrl = 'https://api.thegraph.com/subgraphs/name/linear-protocol/linear';
 
-export default config;
+const contractId = 'linear-protocol.near';
 
-export { APIURL };
+export default {
+  connectConfig,
+  apiUrl,
+  contractId,
+};

@@ -1,7 +1,7 @@
 import { YOCTONEAR } from './consts';
 import { BigNumber } from 'bignumber.js';
 import { LatestPriceFromContract } from './types';
-import { client, loadContract } from './helper';
+import { getClient, loadContract } from './helper';
 
 async function queryPriceBefore(timestamp: number) {
   const getBeforeQuery = `
@@ -13,6 +13,7 @@ async function queryPriceBefore(timestamp: number) {
       }
     }`;
   //console.log(getBeforeQuery)
+  const client = getClient();
   let data = await client.query(getBeforeQuery).toPromise();
   let queryData = data.data;
   if (queryData == null) {
@@ -43,6 +44,7 @@ async function queryLatestPriceFromSubgraph() {
       }
     }
   `;
+  const client = getClient();
   let data = await client.query(getLatestQuery).toPromise();
   let queryData = data.data;
   if (queryData == null) {

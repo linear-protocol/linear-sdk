@@ -1,4 +1,4 @@
-import config, { APIURL } from './config';
+import { getConfig } from './config';
 import { BigNumber } from 'bignumber.js';
 import * as nearAPI from 'near-api-js';
 import { createClient } from 'urql';
@@ -10,19 +10,24 @@ BigNumber.config({
   DECIMAL_PLACES: 64,
 });
 
-const client = createClient({
-  url: APIURL,
-});
+function getClient() {
+  const config = getConfig();
+  const client = createClient({
+    url: config.apiUrl,
+  });
+  return client;
+}
 
 let contract: LiNearContract | null = null;
 
 async function loadContract() {
-  const near = await connect(config);
+  const config = getConfig();
+  const near = await connect(config.connectConfig);
   const account = await near.account('');
   if (!contract) {
     contract = new nearAPI.Contract(
       account, // the account object that is connecting
-      'linear-protocol.near',
+      config.contractId,
       {
         // name of contract you're connecting to
         viewMethods: [
@@ -46,4 +51,4 @@ async function getSummaryFromContract() {
   return response;
 }
 
-export { client, loadContract, getSummaryFromContract };
+export { getClient, loadContract, getSummaryFromContract };

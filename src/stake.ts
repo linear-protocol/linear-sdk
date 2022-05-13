@@ -1,6 +1,6 @@
 import { YOCTONEAR } from './consts';
 import { BigNumber } from 'bignumber.js';
-import { client, loadContract } from './helper';
+import { getClient, loadContract } from './helper';
 import { StakeTime } from './types';
 import {
   queryLatestPriceFromContract,
@@ -17,6 +17,7 @@ export async function queryStakeTime(accountid: string): Promise<StakeTime> {
     }
   }`;
   // console.log(getStakeTimeQuery)
+  const client = getClient();
   let data = await client.query(getStakeTimeQuery).toPromise();
   let queryData = data.data;
   if (queryData == null) {
@@ -44,6 +45,7 @@ async function getTransferIncome(accountId: string) {
         }
       }
   }`;
+  const client = getClient();
   let data = await client.query(getTransferEvent).toPromise();
   let queryData = data.data;
   if (queryData == null) {
@@ -82,6 +84,7 @@ async function getUserIncome(accountId: string, flag: boolean) {
       }
     }`;
   // console.log(getIncomeQuery)
+  const client = getClient();
   let data = await client.query(getIncomeQuery).toPromise();
   //console.log(data)
   let queryData = data.data.users[0];

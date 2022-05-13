@@ -1,6 +1,6 @@
 import { TotalSwapFees } from './types';
 import { BigNumber } from 'bignumber.js';
-import { client, getSummaryFromContract } from './helper';
+import { getClient, getSummaryFromContract } from './helper';
 import { queryLatestPriceFromSubgraph, queryPriceBefore } from './price';
 
 async function getLatestFeesPayed(): Promise<TotalSwapFees> {
@@ -13,6 +13,7 @@ async function getLatestFeesPayed(): Promise<TotalSwapFees> {
       }
     }
   `;
+  const client = getClient();
   let data = await client.query(getLatestQuery).toPromise();
   let queryData = data.data;
   if (queryData == null) {
@@ -32,6 +33,7 @@ async function getTargetTimeFeesPayed(
         timestamp
      }
   }`;
+  const client = getClient();
   let data = await client.query(getBeforeFeesPayed).toPromise();
   let queryData = data.data;
   if (queryData == null) {
