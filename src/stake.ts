@@ -16,17 +16,12 @@ export async function queryStakeTime(accountid: string): Promise<StakeTime> {
       firstStakingTime
     }
   }`;
-  // console.log(getStakeTimeQuery)
   const client = getClient();
   let data = await client.query(getStakeTimeQuery).toPromise();
   let queryData = data.data;
   if (queryData == null) {
     throw new Error('fail to query price');
   }
-  // const timestampInt = Number(queryData.users[0].firstStakingTime.toString())
-  // const unixTimestamp = timestampInt / 1000000
-  // const date = new Date(unixTimestamp)
-  // console.log("user first stake time: ", date)
   return queryData.users[0];
 }
 
@@ -83,10 +78,8 @@ async function getUserIncome(accountId: string, flag: boolean) {
         feesPaid
       }
     }`;
-  // console.log(getIncomeQuery)
   const client = getClient();
   let data = await client.query(getIncomeQuery).toPromise();
-  //console.log(data)
   let queryData = data.data.users[0];
   if (queryData == null) {
     throw new Error('fail to query user');
@@ -109,16 +102,8 @@ async function getUserIncome(accountId: string, flag: boolean) {
     .plus(tfReward);
   if (flag) {
     const rewardFinal = reward.plus(fessPaid);
-    // console.log(
-    //   'rewards [subgraph with fee] =\t\t %s NEAR',
-    //   rewardFinal.div(YOCTONEAR).toFixed(8)
-    // );
     return rewardFinal;
   } else {
-    // console.log(
-    //   'rewards [subgraph without fee] =\t %s NEAR',
-    //   reward.div(YOCTONEAR).toFixed(8)
-    // );
     return reward;
   }
 }
@@ -147,10 +132,6 @@ async function getStakingReward(accountId: string) {
     .plus(account.unstaked_balance || 0)
     .minus(deposits.near);
 
-  // console.log(
-  //   'rewards [indexer] =\t\t\t %s NEAR',
-  //   near_reward.div(10 ** 24).toFixed(8)
-  // );
   return near_reward;
 }
 
@@ -164,10 +145,6 @@ export async function stakingRewardsDiff(accountId: string) {
     // getUserIncome(accountId, false),
     getStakingReward(accountId),
   ]);
-  // console.log("diff [subgraph - indexer] =\t\t %s NEAR", rewards_subgraph.minus(rewards_indexer).div(10 ** 24).toFixed(8));
-  // console.log(
-  //   'diff [subgraph with fee - indexer] =\t %s NEAR',
-  // );
   return rewards_subgraph_with_fee
     .minus(rewards_indexer)
     .div(YOCTONEAR)

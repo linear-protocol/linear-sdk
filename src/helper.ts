@@ -47,7 +47,6 @@ async function loadContract() {
 async function getSummaryFromContract() {
   const contract = await loadContract();
   let response = await contract.get_summary();
-  //console.log(response);
   return response;
 }
 

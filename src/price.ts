@@ -12,14 +12,12 @@ async function queryPriceBefore(timestamp: number) {
         price
       }
     }`;
-  //console.log(getBeforeQuery)
   const client = getClient();
   let data = await client.query(getBeforeQuery).toPromise();
   let queryData = data.data;
   if (queryData == null) {
     throw new Error('fail to query price');
   }
-  // console.log("price at %s : %s",timeStamp.toString(),queryData.prices[0].price.toString())
   return queryData.prices[0];
 }
 
@@ -50,7 +48,6 @@ async function queryLatestPriceFromSubgraph() {
   if (queryData == null) {
     throw new Error('fail to query price');
   }
-  // console.log("current price: ",queryData.prices[0].price.toString())
   return queryData.prices[0];
 }
 
