@@ -5,7 +5,7 @@ export enum SDK_ENV {
   TESTNET = 'testnet',
 }
 
-export interface Config {
+export interface LiNearSDKConfig {
   connectConfig: ConnectConfig;
   apiUrl: string;
   contractId: string;

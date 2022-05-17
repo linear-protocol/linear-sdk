@@ -1,4 +1,4 @@
-import { getConfig } from './config';
+import { getLiNearSDKConfig } from './config';
 import { BigNumber } from 'bignumber.js';
 import * as nearAPI from 'near-api-js';
 import { createClient } from 'urql';
@@ -11,7 +11,7 @@ BigNumber.config({
 });
 
 function getClient() {
-  const config = getConfig();
+  const config = getLiNearSDKConfig();
   const client = createClient({
     url: config.apiUrl,
   });
@@ -21,7 +21,7 @@ function getClient() {
 let contract: LiNearContract | null = null;
 
 async function loadContract() {
-  const config = getConfig();
+  const config = getLiNearSDKConfig();
   const near = await connect(config.connectConfig);
   const account = await near.account('');
   if (!contract) {

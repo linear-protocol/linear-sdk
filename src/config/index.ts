@@ -1,13 +1,14 @@
-import { Config, SDK_ENV } from './type';
+import { LiNearSDKConfig, SDK_ENV } from './type';
 import mainnetConfig from './mainnet';
 import testnetConfig from './testnet';
 
-const config: Record<SDK_ENV, Config> = {
+const config: Record<SDK_ENV, LiNearSDKConfig> = {
   [SDK_ENV.MAINNET]: mainnetConfig,
   [SDK_ENV.TESTNET]: testnetConfig,
 };
 
 let CURRENT_CONFIG_ENV = SDK_ENV.MAINNET;
+let SDK_CUSTOM_CONFIG: LiNearSDKConfig | null = null;
 
 /**
  * default env is mainnet, but you can change it by calling this function
@@ -17,8 +18,16 @@ function changeSDKEnvironment(env = SDK_ENV.MAINNET) {
   CURRENT_CONFIG_ENV = env;
 }
 
-function getConfig() {
-  return config[CURRENT_CONFIG_ENV];
+function getLiNearSDKConfig(): LiNearSDKConfig {
+  return SDK_CUSTOM_CONFIG || config[CURRENT_CONFIG_ENV];
 }
 
-export { changeSDKEnvironment, getConfig };
+/**
+ * custom configauation for LiNear SDK
+ * @param config custom config
+ */
+function setLiNearSDKConfig(config: LiNearSDKConfig) {
+  SDK_CUSTOM_CONFIG = config;
+}
+
+export { changeSDKEnvironment, getLiNearSDKConfig, setLiNearSDKConfig };
