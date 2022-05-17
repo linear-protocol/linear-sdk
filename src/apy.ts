@@ -7,7 +7,7 @@ import gql from 'graphql-tag';
 async function getLatestFeesPaid(): Promise<TotalSwapFees> {
   const getLatestQuery = gql`
     query ToTalSwapFeesQuery {
-      totalSwapFees (first: 1, orderBy: timestamp, orderDirection: desc){
+      totalSwapFees(first: 1, orderBy: timestamp, orderDirection: desc) {
         id
         timestamp
         feesPaid

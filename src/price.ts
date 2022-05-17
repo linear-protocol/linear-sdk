@@ -36,7 +36,7 @@ async function queryLatestPriceFromContract(): Promise<
 async function queryLatestPriceFromSubgraph() {
   const getLatestQuery = gql`
     query {
-      prices (first: 1, orderBy: id, orderDirection: desc){
+      prices(first: 1, orderBy: id, orderDirection: desc) {
         id
         timestamp
         price

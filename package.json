@@ -14,12 +14,9 @@
     "start": "tsdx watch",
     "build": "tsdx build",
     "test": "tsdx test",
-    "lint": "tsdx lint src test --fix",
     "prepare": "tsdx build && husky install",
     "size": "size-limit",
-    "analyze": "size-limit --why",
-    "prettier": "prettier ./src/*.ts ./test/*.ts --write",
-    "format": "yarn prettier && yarn lint"
+    "analyze": "size-limit --why"
   },
   "dependencies": {
     "@apollo/client": "^3.5.10",
