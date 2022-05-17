@@ -17,10 +17,6 @@ describe('apy testing', () => {
       const lpApy = await getLiquidityPoolApy();
       expect(Number(lpApy)).toBeLessThan(0.3);
       expect(Number(lpApy)).toBeGreaterThanOrEqual(0);
-      console.log({
-        stakePoolApy,
-        lpApy
-      })
     }
 
     changeSDKEnvironment(SDK_ENV.MAINNET);
