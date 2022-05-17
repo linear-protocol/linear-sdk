@@ -3,7 +3,7 @@ import { BigNumber } from 'bignumber.js';
 import { getClient, getSummaryFromContract } from './helper';
 import { queryLatestPriceFromSubgraph, queryPriceBefore } from './price';
 
-async function getLatestFeesPayed(): Promise<TotalSwapFees> {
+async function getLatestFeesPaid(): Promise<TotalSwapFees> {
   const getLatestQuery = `
     query {
       totalSwapFees (first: 1, orderBy: timestamp, orderDirection: desc){
@@ -22,10 +22,10 @@ async function getLatestFeesPayed(): Promise<TotalSwapFees> {
   return queryData.totalSwapFees[0];
 }
 
-async function getTargetTimeFeesPayed(
+async function getTargetTimeFeesPaid(
   timestamp: number
 ): Promise<TotalSwapFees> {
-  const getBeforeFeesPayed = `
+  const getBeforeFeesPaid = `
     query {
       totalSwapFees (first: 1, where: {timestamp_gt: "${timestamp}"} ){
         id
@@ -34,7 +34,7 @@ async function getTargetTimeFeesPayed(
      }
   }`;
   const client = getClient();
-  let data = await client.query(getBeforeFeesPayed).toPromise();
+  let data = await client.query(getBeforeFeesPaid).toPromise();
   let queryData = data.data;
   if (queryData == null) {
     throw new Error('fail to query before totalSwapFees');
@@ -50,13 +50,13 @@ export async function calcLpApy(): Promise<string> {
     1000000000000000000000000
   );
   const tmpLpTVL = tmpLinearShares.times(tmpPrice).plus(tmpNEARShares);
-  const tmpFeesPayed = await getLatestFeesPayed();
+  const tmpFeesPaid = await getLatestFeesPaid();
   const targetTimeForFees =
-    Number(tmpFeesPayed.timestamp) - 3 * 24 * 60 * 60 * 1000000000;
-  const initFeesPayed = await getTargetTimeFeesPayed(targetTimeForFees);
+    Number(tmpFeesPaid.timestamp) - 3 * 24 * 60 * 60 * 1000000000;
+  const initFeesPaid = await getTargetTimeFeesPaid(targetTimeForFees);
   const days = 3; // secsCurrent.minus(secsInit).div(24).div(60*60).div(1000000000)
-  const feesCurrent = new BigNumber(tmpFeesPayed.feesPaid);
-  const feesInit = new BigNumber(initFeesPayed.feesPaid);
+  const feesCurrent = new BigNumber(tmpFeesPaid.feesPaid);
+  const feesInit = new BigNumber(initFeesPaid.feesPaid);
   const lpApy = feesCurrent
     .minus(feesInit)
     .div(days)
