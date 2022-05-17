@@ -2,10 +2,11 @@ import { TotalSwapFees } from './types';
 import { BigNumber } from 'bignumber.js';
 import { getClient, getSummaryFromContract } from './helper';
 import { queryLatestPriceFromSubgraph, queryPriceBefore } from './price';
+import gql from 'graphql-tag';
 
 async function getLatestFeesPaid(): Promise<TotalSwapFees> {
-  const getLatestQuery = `
-    query {
+  const getLatestQuery = gql`
+    query ToTalSwapFeesQuery {
       totalSwapFees (first: 1, orderBy: timestamp, orderDirection: desc){
         id
         timestamp
@@ -25,7 +26,7 @@ async function getLatestFeesPaid(): Promise<TotalSwapFees> {
 async function getTargetTimeFeesPaid(
   timestamp: number
 ): Promise<TotalSwapFees> {
-  const getBeforeFeesPaid = `
+  const getBeforeFeesPaid = gql`
     query {
       totalSwapFees (first: 1, where: {timestamp_gt: "${timestamp}"} ){
         id

@@ -7,9 +7,10 @@ import {
   queryLatestPriceFromSubgraph,
   queryPriceBefore,
 } from './price';
+import gql from 'graphql-tag';
 
 export async function queryStakeTime(accountid: string): Promise<StakeTime> {
-  const getStakeTimeQuery = `
+  const getStakeTimeQuery = gql`
     query {
       users (first: 1, where: {id: "${accountid}"} ){
       id
@@ -26,7 +27,7 @@ export async function queryStakeTime(accountid: string): Promise<StakeTime> {
 }
 
 async function getTransferIncome(accountId: string) {
-  const getTransferEvent = `
+  const getTransferEvent = gql`
     query {
       users(first: 1, where:{id:"${accountId}"}) {
         id
@@ -67,7 +68,7 @@ async function getTransferIncome(accountId: string) {
 }
 
 async function getUserIncome(accountId: string, flag: boolean) {
-  const getIncomeQuery = `
+  const getIncomeQuery = gql`
     query {
       users (first: 1, where: {id: "${accountId}"} ){
         id

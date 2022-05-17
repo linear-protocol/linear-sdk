@@ -2,9 +2,10 @@ import { ONE_NEAR_IN_YOCTO } from './consts';
 import { BigNumber } from 'bignumber.js';
 import { LatestPriceFromContract } from './types';
 import { getClient, loadContract } from './helper';
+import gql from 'graphql-tag';
 
 async function queryPriceBefore(timestamp: number) {
-  const getBeforeQuery = `
+  const getBeforeQuery = gql`
     query {
       prices (first: 1, where: {timestamp_gt: "${timestamp}"} ){
         id
@@ -33,7 +34,7 @@ async function queryLatestPriceFromContract(): Promise<
 }
 
 async function queryLatestPriceFromSubgraph() {
-  const getLatestQuery = `
+  const getLatestQuery = gql`
     query {
       prices (first: 1, orderBy: id, orderDirection: desc){
         id
