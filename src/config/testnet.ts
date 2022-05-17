@@ -5,7 +5,7 @@ const keyStore = new keyStores.InMemoryKeyStore();
 const connectConfig: ConnectConfig = {
   networkId: 'testnet',
   keyStore: keyStore,
-  nodeUrl: 'https://rpc.testnet.near.org',
+  nodeUrl: 'https://public-rpc.blockpi.io/http/near-testnet',
   walletUrl: 'https://wallet.testnet.near.org',
   helperUrl: 'https://helper.testnet.near.org',
   headers: {},

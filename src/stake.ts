@@ -1,6 +1,5 @@
-import { ONE_NEAR_IN_YOCTO } from './consts';
 import { BigNumber } from 'bignumber.js';
-import { getClient, loadContract } from './helper';
+import { getClient } from './helper';
 import { StakeTime } from './types';
 import {
   queryLatestPriceFromContract,
@@ -9,7 +8,9 @@ import {
 } from './price';
 import gql from 'graphql-tag';
 
-export async function queryStakeTime(accountid: string): Promise<StakeTime> {
+export async function getFirstStakingTime(
+  accountid: string
+): Promise<StakeTime> {
   const getStakeTimeQuery = gql`
     query {
       users (first: 1, where: {id: "${accountid}"} ){
@@ -67,7 +68,10 @@ async function getTransferIncome(accountId: string) {
   return transferInReward - transferOutReward;
 }
 
-async function getUserIncome(accountId: string, flag: boolean) {
+export async function getStakingRewards(
+  accountId: string,
+  includingFees: boolean = false
+): Promise<string> {
   const getIncomeQuery = gql`
     query {
       users (first: 1, where: {id: "${accountId}"} ){
@@ -101,53 +105,10 @@ async function getUserIncome(accountId: string, flag: boolean) {
     .minus(stakedNear)
     .plus(unstakedGetNEAR)
     .plus(tfReward);
-  if (flag) {
+  if (includingFees) {
     const rewardFinal = reward.plus(fessPaid);
-    return rewardFinal;
+    return rewardFinal.toFixed();
   } else {
-    return reward;
+    return reward.toFixed();
   }
-}
-
-async function getDeposits(accountId: string) {
-  const result = await fetch(
-    `https://api.linearprotocol.org/deposits/${accountId}`
-  );
-  const json = await result.json();
-  return json.deposits;
-}
-
-async function getStakingReward(accountId: string) {
-  const contract = await loadContract();
-  const [liNearPrice, account, linearBalance, deposits] = await Promise.all([
-    contract.ft_price(),
-    contract.get_account({ account_id: accountId }),
-    contract.ft_balance_of({ account_id: accountId }),
-    getDeposits(accountId),
-  ]);
-
-  const near_reward = new BigNumber(linearBalance)
-    .minus(deposits.linear)
-    .times(liNearPrice)
-    .div(10 ** 24)
-    .plus(account.unstaked_balance || 0)
-    .minus(deposits.near);
-
-  return near_reward;
-}
-
-export async function stakingRewardsDiff(accountId: string) {
-  const [
-    rewards_subgraph_with_fee,
-    // rewards_subgraph,
-    rewards_indexer,
-  ] = await Promise.all([
-    getUserIncome(accountId, true),
-    // getUserIncome(accountId, false),
-    getStakingReward(accountId),
-  ]);
-  return rewards_subgraph_with_fee
-    .minus(rewards_indexer)
-    .div(ONE_NEAR_IN_YOCTO)
-    .toFixed();
 }

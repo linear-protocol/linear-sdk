@@ -43,7 +43,7 @@ async function getTargetTimeFeesPaid(
   return queryData.totalSwapFees[0];
 }
 
-export async function calcLpApy(): Promise<string> {
+export async function getLiquidityPoolApy(): Promise<string> {
   let response = await getSummaryFromContract();
   const tmpLinearShares = new BigNumber(response.lp_staked_share!);
   const tmpNEARShares = new BigNumber(response.lp_near_amount!);
@@ -68,18 +68,18 @@ export async function calcLpApy(): Promise<string> {
   return lpApy.toFixed();
 }
 
-export async function calcStakePoolApy() {
-  const latesdPrice = await queryLatestPriceFromSubgraph();
+export async function getStakingApy() {
+  const latestPrice = await queryLatestPriceFromSubgraph();
   const targetTime =
-    Number(latesdPrice.timestamp) - 30 * 24 * 60 * 60 * 1000000000;
+    Number(latestPrice.timestamp) - 30 * 24 * 60 * 60 * 1000000000;
   const price30DaysAgo = await queryPriceBefore(targetTime);
-  const price1 = new BigNumber(latesdPrice.price);
-  const price2 = new BigNumber(price30DaysAgo.price);
+  const latestPriceBN = new BigNumber(latestPrice.price);
+  const price30DaysAgoBN = new BigNumber(price30DaysAgo.price);
   const days = new BigNumber(24 * 60 * 60 * 1000000000 * 30);
   const times1 = new BigNumber(24 * 60 * 60 * 1000000000 * 365);
-  const apy = price1
-    .minus(price2)
-    .div(price2)
+  const apy = latestPriceBN
+    .minus(price30DaysAgoBN)
+    .div(price30DaysAgoBN)
     .times(times1)
     .div(days);
   return apy.toFixed();

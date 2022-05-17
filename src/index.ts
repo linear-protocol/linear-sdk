@@ -1,7 +1,9 @@
 // env
-export { changeSDKEnvironment } from './config';
-export * from './config/type';
+export { changeSDKEnvironment, setLiNearSDKConfig } from './config';
+
+export { SDK_ENV, LiNearSDKConfig } from './config/type';
 
 // service
-export * from './apy';
-export * from './stake';
+export { getLiquidityPoolApy, getStakingApy } from './apy';
+
+export { getFirstStakingTime, getStakingRewards } from './stake';
