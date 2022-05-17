@@ -1,4 +1,4 @@
-import { YOCTONEAR } from './consts';
+import { ONE_NEAR_IN_YOCTO } from './consts';
 import { BigNumber } from 'bignumber.js';
 import { getClient, loadContract } from './helper';
 import { StakeTime } from './types';
@@ -147,6 +147,6 @@ export async function stakingRewardsDiff(accountId: string) {
   ]);
   return rewards_subgraph_with_fee
     .minus(rewards_indexer)
-    .div(YOCTONEAR)
+    .div(ONE_NEAR_IN_YOCTO)
     .toFixed();
 }

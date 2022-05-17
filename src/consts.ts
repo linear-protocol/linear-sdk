@@ -1,3 +1,3 @@
 import { utils } from 'near-api-js';
 
-export const YOCTONEAR = utils.format.parseNearAmount('1')!;
+export const ONE_NEAR_IN_YOCTO = utils.format.parseNearAmount('1')!;
