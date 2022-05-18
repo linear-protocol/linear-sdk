@@ -44,7 +44,6 @@ export interface LiNearContract extends Contract {
 }
 
 export interface TotalSwapFees {
-  id: string;
   timestamp: number;
   feesPaid: string;
 }
@@ -55,7 +54,5 @@ export interface LatestPriceFromContract {
 }
 
 export interface StakeTime {
-  id: string;
   firstStakingTime: string;
-  __typename: string;
 }

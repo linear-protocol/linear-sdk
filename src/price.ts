@@ -8,8 +8,6 @@ async function queryPriceBefore(timestamp: number) {
   const getBeforeQuery = gql`
     {
       prices (first: 1, where: {timestamp_gt: "${timestamp}"} ){
-        id
-        timestamp
         price
       }
     }

@@ -9,7 +9,6 @@ async function getLatestFeesPaid(): Promise<TotalSwapFees> {
   const getLatestQuery = gql`
     {
       totalSwapFees(first: 1, orderBy: timestamp, orderDirection: desc) {
-        id
         timestamp
         feesPaid
       }
@@ -30,7 +29,6 @@ async function getTargetTimeFeesPaid(
   const getBeforeFeesPaid = gql`
     {
       totalSwapFees (first: 1, where: {timestamp_gt: "${timestamp}"} ){
-        id
         feesPaid
         timestamp
       }

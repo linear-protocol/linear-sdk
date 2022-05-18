@@ -11,7 +11,6 @@ export async function getFirstStakingTime(accountId: string): Promise<string> {
   const getStakeTimeQuery = gql`
     {
       users (first: 1, where: {id: "${accountId}"} ){
-        id
         firstStakingTime
       }
     }
@@ -29,7 +28,6 @@ async function getTransferIncome(accountId: string) {
   const getTransferEvent = gql`
     {
       users(first: 1, where:{id:"${accountId}"}) {
-        id
         transferedIn {
           amount
           timestamp
@@ -74,7 +72,6 @@ export async function getStakingRewards(
   const getIncomeQuery = gql`
     {
       users (first: 1, where: {id: "${accountId}"} ){
-        id
         mintedLinear
         stakedNear
         unstakedLinear
