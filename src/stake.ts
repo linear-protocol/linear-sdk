@@ -1,6 +1,5 @@
 import { BigNumber } from 'bignumber.js';
 import { getClient } from './helper';
-import { StakeTime } from './types';
 import {
   queryLatestPriceFromContract,
   queryLatestPriceFromSubgraph,
@@ -8,9 +7,7 @@ import {
 } from './price';
 import gql from 'graphql-tag';
 
-export async function getFirstStakingTime(
-  accountId: string
-): Promise<StakeTime> {
+export async function getFirstStakingTime(accountId: string): Promise<string> {
   const getStakeTimeQuery = gql`
     {
       users (first: 1, where: {id: "${accountId}"} ){
