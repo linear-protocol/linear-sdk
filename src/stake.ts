@@ -5,7 +5,7 @@ import {
   queryLatestPriceFromSubgraph,
   queryPriceBefore,
 } from './price';
-import gql from 'graphql-tag';
+import { gql } from 'urql';
 
 export async function getFirstStakingTime(accountId: string): Promise<string> {
   const getStakeTimeQuery = gql`
@@ -17,11 +17,12 @@ export async function getFirstStakingTime(accountId: string): Promise<string> {
   `;
   const client = getClient();
   let { data } = await client.query(getStakeTimeQuery).toPromise();
-  if (data == null) {
+  if (data) {
+    const { firstStakingTime } = data.users[0];
+    return firstStakingTime;
+  } else {
     throw new Error('Failed to query first staking time');
   }
-  const { firstStakingTime } = data.users[0];
-  return firstStakingTime;
 }
 
 async function getTransferIncome(accountId: string) {
@@ -40,14 +41,14 @@ async function getTransferIncome(accountId: string) {
     }
   `;
   const client = getClient();
-  let data = await client.query(getTransferEvent).toPromise();
-  let queryData = data.data;
-  if (queryData == null) {
+  let { data } = await client.query(getTransferEvent).toPromise();
+  if (!data) {
     throw new Error('Failed to query transfer events');
   }
+
   const latestPrice = await queryLatestPriceFromContract();
-  const transferIn = queryData.users[0].transferedIn;
-  const transferOut = queryData.users[0].transferedOut;
+  const transferIn = data.users[0].transferedIn;
+  const transferOut = data.users[0].transferedOut;
   let transferInReward = 0;
   let transferOutReward = 0;
   for (let i in transferIn) {
@@ -81,18 +82,18 @@ export async function getStakingRewards(
     }
   `;
   const client = getClient();
-  let data = await client.query(getIncomeQuery).toPromise();
-  let queryData = data.data.users[0];
-  if (queryData == null) {
+  let { data } = await client.query(getIncomeQuery).toPromise();
+  if (!data) {
     throw new Error('Failed to query user');
   }
+  let user = data.data.users[0];
 
   const linearPrice = new BigNumber(await queryLatestPriceFromSubgraph());
-  const mintedLinear = new BigNumber(queryData.mintedLinear);
-  const stakedNear = new BigNumber(queryData.stakedNear);
-  const unstakedLinear = new BigNumber(queryData.unstakedLinear);
-  const unstakeReceivedNEAR = new BigNumber(queryData.unstakeReceivedNear);
-  const feesPaid = new BigNumber(queryData.feesPaid);
+  const mintedLinear = new BigNumber(user.mintedLinear);
+  const stakedNear = new BigNumber(user.stakedNear);
+  const unstakedLinear = new BigNumber(user.unstakedLinear);
+  const unstakeReceivedNEAR = new BigNumber(user.unstakeReceivedNear);
+  const feesPaid = new BigNumber(user.feesPaid);
   const currentLinear = mintedLinear.minus(unstakedLinear);
   const transferReward = new BigNumber(await getTransferIncome(accountId));
 

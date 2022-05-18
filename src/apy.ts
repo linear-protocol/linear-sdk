@@ -3,7 +3,7 @@ import { TotalSwapFees } from './types';
 import { BigNumber } from 'bignumber.js';
 import { getClient, getSummaryFromContract } from './helper';
 import { queryLatestPriceFromSubgraph, queryPriceBefore } from './price';
-import gql from 'graphql-tag';
+import { gql } from 'urql';
 
 async function getLatestFeesPaid(): Promise<TotalSwapFees> {
   const getLatestQuery = gql`
@@ -15,12 +15,12 @@ async function getLatestFeesPaid(): Promise<TotalSwapFees> {
     }
   `;
   const client = getClient();
-  let data = await client.query(getLatestQuery).toPromise();
-  let queryData = data.data;
-  if (queryData == null) {
+  let { data } = await client.query(getLatestQuery).toPromise();
+  if (data) {
+    return data.totalSwapFees[0];
+  } else {
     throw new Error('Failed to query latest totalSwapFees');
   }
-  return queryData.totalSwapFees[0];
 }
 
 async function getTargetTimeFeesPaid(
@@ -28,21 +28,21 @@ async function getTargetTimeFeesPaid(
 ): Promise<TotalSwapFees> {
   const getBeforeFeesPaid = gql`
     {
-      totalSwapFees (first: 1, where: {timestamp_gt: "${timestamp}"} ){
+      totalSwapFees (first: 1, where: {timestamp_gt: "${timestamp.toString()}"} ){
         feesPaid
         timestamp
       }
     }
   `;
   const client = getClient();
-  let data = await client.query(getBeforeFeesPaid).toPromise();
-  let queryData = data.data;
-  if (queryData == null) {
+  let { data } = await client.query(getBeforeFeesPaid).toPromise();
+  if (data) {
+    return data.totalSwapFees[0];
+  } else {
     throw new Error(
       `Failed to query totalSwapFees before timestamp ${timestamp}`
     );
   }
-  return queryData.totalSwapFees[0];
 }
 
 export async function getLiquidityPoolApy(): Promise<string> {

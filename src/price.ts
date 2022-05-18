@@ -2,23 +2,23 @@ import { ONE_NEAR_IN_YOCTO, SECOND, SECOND_TO_NANOSECOND } from './consts';
 import { BigNumber } from 'bignumber.js';
 import { LatestPriceFromContract } from './types';
 import { getClient, loadContract } from './helper';
-import gql from 'graphql-tag';
+import { gql } from 'urql';
 
 async function queryPriceBefore(timestamp: number) {
   const getBeforeQuery = gql`
     {
-      prices (first: 1, where: {timestamp_gt: "${timestamp}"} ){
+      prices (first: 1, where: {timestamp_gt: "${timestamp.toString()}"} ){
         price
       }
     }
   `;
   const client = getClient();
-  let data = await client.query(getBeforeQuery).toPromise();
-  let queryData = data.data;
-  if (queryData == null) {
+  let { data } = await client.query(getBeforeQuery).toPromise();
+  if (data) {
+    return data.prices[0];
+  } else {
     throw new Error(`Failed to query price before timestamp ${timestamp}`);
   }
-  return queryData.prices[0];
 }
 
 async function queryLatestPriceFromContract(): Promise<
@@ -43,12 +43,12 @@ async function queryLatestPriceFromSubgraph() {
     }
   `;
   const client = getClient();
-  let data = await client.query(getLatestQuery).toPromise();
-  let queryData = data.data;
-  if (queryData == null) {
+  let { data } = await client.query(getLatestQuery).toPromise();
+  if (data) {
+    return data.prices[0];
+  } else {
     throw new Error('Failed to query latest price');
   }
-  return queryData.prices[0];
 }
 
 export {

@@ -1,6 +1,6 @@
 {
   "name": "linear-sdk",
-  "author": "linear protocol",
+  "author": "LiNEAR Protocol",
   "module": "./dist/linear-sdk.esm.js",
   "version": "1.0.0",
   "license": "MIT",
@@ -19,7 +19,6 @@
     "analyze": "size-limit --why"
   },
   "dependencies": {
-    "@apollo/client": "^3.5.10",
     "babel-polyfill": "^6.26.0",
     "babel-register": "^6.26.0",
     "bignumber.js": "^9.0.2",
