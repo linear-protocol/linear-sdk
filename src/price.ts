@@ -7,7 +7,9 @@ import { gql } from 'urql';
 async function queryPriceBefore(timestamp: number) {
   const getPriceBeforeTimestamp = gql`
     {
-      prices (first: 1, orderBy: timestamp, orderDirection: desc, where: {timestamp_lte: "${timestamp.toString()}"} ){
+      prices (first: 1, orderBy: timestamp, orderDirection: desc,
+        where: {timestamp_lte: "${timestamp.toString()}"} )
+      {
         price
       }
     }
