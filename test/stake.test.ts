@@ -16,21 +16,17 @@ describe('stake', () => {
 
     changeSDKEnvironment(SDK_ENV.MAINNET);
     for (const accountId of accountIds) {
-      const { id, firstStakingTime, __typename } = await getFirstStakingTime(
+      const time = await getFirstStakingTime(
         accountId
       );
-      expect(id).toContain('.near');
-      expect(Number(firstStakingTime)).not.toBeNaN();
-      expect(__typename).toEqual('User');
+      expect(Number(time)).not.toBeNaN();
     }
     changeSDKEnvironment(SDK_ENV.TESTNET);
     for (const accountId of testnetAccountIds) {
-      const { id, firstStakingTime, __typename } = await getFirstStakingTime(
+      const time = await getFirstStakingTime(
         accountId
       );
-      expect(id).toContain('.testnet');
-      expect(Number(firstStakingTime)).not.toBeNaN();
-      expect(__typename).toEqual('User');
+      expect(Number(time)).not.toBeNaN();
     }
   });
 });

@@ -20,12 +20,12 @@ export async function getFirstStakingTime(
     }
   `;
   const client = getClient();
-  let data = await client.query(getStakeTimeQuery).toPromise();
-  let queryData = data.data;
-  if (queryData == null) {
+  let { data } = await client.query(getStakeTimeQuery).toPromise();
+  if (data == null) {
     throw new Error('Failed to query first staking time');
   }
-  return queryData.users[0];
+  const { firstStakingTime } = data.users[0];
+  return firstStakingTime;
 }
 
 async function getTransferIncome(accountId: string) {
