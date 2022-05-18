@@ -1,10 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import { getClient } from './helper';
-import {
-  queryLatestPriceFromContract,
-  queryLatestPriceFromSubgraph,
-  queryPriceBefore,
-} from './price';
+import { queryLatestPriceFromSubgraph } from './price';
 import { gql } from 'urql';
 
 export async function getFirstStakingTime(accountId: string): Promise<string> {
@@ -29,14 +25,10 @@ async function getTransferIncome(accountId: string) {
   const getTransferEvent = gql`
     {
       users(first: 1, where:{id:"${accountId}"}) {
-        transferedIn {
-          amount
-          timestamp
-        }
-        transferedOut {
-          amount
-          timestamp
-        }
+        transferedInShares
+        transferedInValue
+        transferedOutShares
+        transferedOutValue
       }
     }
   `;
@@ -46,23 +38,15 @@ async function getTransferIncome(accountId: string) {
     throw new Error('Failed to query transfer events');
   }
 
-  const latestPrice = await queryLatestPriceFromContract();
-  const transferIn = data.users[0].transferedIn;
-  const transferOut = data.users[0].transferedOut;
-  let transferInReward = 0;
-  let transferOutReward = 0;
-  for (let i in transferIn) {
-    let tempPrice = await queryPriceBefore(transferIn[i].timestamp);
-    let tmpReward =
-      transferIn[i].amount * (latestPrice.price - tempPrice.price);
-    transferInReward += tmpReward;
-  }
-  for (let i in transferOut) {
-    let tempPrice = await queryPriceBefore(transferOut[i].timestamp);
-    let tmpReward =
-      transferOut[i].amount * (latestPrice.price - tempPrice.price);
-    transferOutReward += tmpReward;
-  }
+  const latestPrice = await queryLatestPriceFromSubgraph();
+  const transferInShares = data.users[0].transferedInShares;
+  const tranfserInValue = data.users[0].transferedInValue;
+  const transferOutShares = data.users[0].transferedOutShares;
+  const tranfserOutValue = data.users[0].transferedOutValue;
+  //console.log(transferInShares,tranfserInValue)
+  let transferInReward = latestPrice.price * transferInShares - tranfserInValue;
+  let transferOutReward =
+    latestPrice.price * transferOutShares - tranfserOutValue;
   return transferInReward - transferOutReward;
 }
 

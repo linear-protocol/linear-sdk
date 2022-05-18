@@ -5,15 +5,15 @@ import { getClient, loadContract } from './helper';
 import { gql } from 'urql';
 
 async function queryPriceBefore(timestamp: number) {
-  const getBeforeQuery = gql`
+  const getPriceBeforeTimestamp = gql`
     {
-      prices (first: 1, where: {timestamp_gt: "${timestamp.toString()}"} ){
+      prices (first: 1, where: {timestamp_lte: "${timestamp.toString()}"} ){
         price
       }
     }
   `;
   const client = getClient();
-  let { data } = await client.query(getBeforeQuery).toPromise();
+  let { data } = await client.query(getPriceBeforeTimestamp).toPromise();
   if (data) {
     return data.prices[0];
   } else {
@@ -33,9 +33,9 @@ async function queryLatestPriceFromContract(): Promise<
 }
 
 async function queryLatestPriceFromSubgraph() {
-  const getLatestQuery = gql`
+  const getLatestPriceQuery = gql`
     {
-      prices(first: 1, orderBy: id, orderDirection: desc) {
+      prices(first: 1, orderBy: timestamp, orderDirection: desc) {
         id
         timestamp
         price
@@ -43,7 +43,7 @@ async function queryLatestPriceFromSubgraph() {
     }
   `;
   const client = getClient();
-  let { data } = await client.query(getLatestQuery).toPromise();
+  let { data } = await client.query(getLatestPriceQuery).toPromise();
   if (data) {
     return data.prices[0];
   } else {
