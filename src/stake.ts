@@ -9,11 +9,11 @@ import {
 import gql from 'graphql-tag';
 
 export async function getFirstStakingTime(
-  accountid: string
+  accountId: string
 ): Promise<StakeTime> {
   const getStakeTimeQuery = gql`
     {
-      users (first: 1, where: {id: "${accountid}"} ){
+      users (first: 1, where: {id: "${accountId}"} ){
         id
         firstStakingTime
       }
@@ -23,7 +23,7 @@ export async function getFirstStakingTime(
   let data = await client.query(getStakeTimeQuery).toPromise();
   let queryData = data.data;
   if (queryData == null) {
-    throw new Error('fail to query price');
+    throw new Error('Failed to query first staking time');
   }
   return queryData.users[0];
 }
@@ -48,7 +48,7 @@ async function getTransferIncome(accountId: string) {
   let data = await client.query(getTransferEvent).toPromise();
   let queryData = data.data;
   if (queryData == null) {
-    throw new Error('fail to query transfer event');
+    throw new Error('Failed to query transfer events');
   }
   const latestPrice = await queryLatestPriceFromContract();
   const transferIn = queryData.users[0].transferedIn;
@@ -90,26 +90,27 @@ export async function getStakingRewards(
   let data = await client.query(getIncomeQuery).toPromise();
   let queryData = data.data.users[0];
   if (queryData == null) {
-    throw new Error('fail to query user');
+    throw new Error('Failed to query user');
   }
-  const latestPrice = await queryLatestPriceFromSubgraph();
-  const price1 = new BigNumber(latestPrice.price);
+
+  const linearPrice = new BigNumber(await queryLatestPriceFromSubgraph());
   const mintedLinear = new BigNumber(queryData.mintedLinear);
   const stakedNear = new BigNumber(queryData.stakedNear);
   const unstakedLinear = new BigNumber(queryData.unstakedLinear);
-  const unstakedGetNEAR = new BigNumber(queryData.unstakeReceivedNear);
-  const fessPaid = new BigNumber(queryData.feesPaid);
+  const unstakeReceivedNEAR = new BigNumber(queryData.unstakeReceivedNear);
+  const feesPaid = new BigNumber(queryData.feesPaid);
   const currentLinear = mintedLinear.minus(unstakedLinear);
-  const transferReward = await getTransferIncome(accountId);
-  const tfReward = new BigNumber(transferReward);
+  const transferReward = new BigNumber(await getTransferIncome(accountId));
+
   const reward = currentLinear
-    .times(price1)
+    .times(linearPrice)
     .integerValue()
     .minus(stakedNear)
-    .plus(unstakedGetNEAR)
-    .plus(tfReward);
+    .plus(unstakeReceivedNEAR)
+    .plus(transferReward);
+
   if (includingFees) {
-    const rewardFinal = reward.plus(fessPaid);
+    const rewardFinal = reward.plus(feesPaid);
     return rewardFinal.toFixed();
   } else {
     return reward.toFixed();

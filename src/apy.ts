@@ -18,7 +18,7 @@ async function getLatestFeesPaid(): Promise<TotalSwapFees> {
   let data = await client.query(getLatestQuery).toPromise();
   let queryData = data.data;
   if (queryData == null) {
-    throw new Error('fail to query latest totalSwapFees');
+    throw new Error('Failed to query latest totalSwapFees');
   }
   return queryData.totalSwapFees[0];
 }
@@ -39,32 +39,31 @@ async function getTargetTimeFeesPaid(
   let data = await client.query(getBeforeFeesPaid).toPromise();
   let queryData = data.data;
   if (queryData == null) {
-    throw new Error('fail to query before totalSwapFees');
+    throw new Error(
+      `Failed to query totalSwapFees before timestamp ${timestamp}`
+    );
   }
   return queryData.totalSwapFees[0];
 }
 
 export async function getLiquidityPoolApy(): Promise<string> {
-  let response = await getSummaryFromContract();
-  const tmpLinearShares = new BigNumber(response.lp_staked_share!);
-  const tmpNEARShares = new BigNumber(response.lp_near_amount!);
-  const tmpPrice = new BigNumber(response.ft_price!).div(
+  let summary = await getSummaryFromContract();
+  const linearAmount = new BigNumber(summary.lp_staked_share!);
+  const nearAmount = new BigNumber(summary.lp_near_amount!);
+  const linearPrice = new BigNumber(summary.ft_price!).div(
     1000000000000000000000000
   );
-  const tmpLpTVL = tmpLinearShares.times(tmpPrice).plus(tmpNEARShares);
-  const tmpFeesPaid = await getLatestFeesPaid();
-  const targetTimeForFees =
-    Number(tmpFeesPaid.timestamp) - 3 * 24 * 60 * 60 * 1000000000;
-  const initFeesPaid = await getTargetTimeFeesPaid(targetTimeForFees);
-  const days = 3; // secsCurrent.minus(secsInit).div(24).div(60*60).div(1000000000)
-  const feesCurrent = new BigNumber(tmpFeesPaid.feesPaid);
-  const feesInit = new BigNumber(initFeesPaid.feesPaid);
-  const lpApy = feesCurrent
-    .minus(feesInit)
-    .div(days)
+  const lpTvl = linearAmount.times(linearPrice).plus(nearAmount);
+  const currentTotalFees = await getLatestFeesPaid();
+  const threeDaysAgo =
+    Number(currentTotalFees.timestamp) - 3 * 24 * 60 * 60 * 1000000000;
+  const totalFees3daysAgo = await getTargetTimeFeesPaid(threeDaysAgo);
+  const lpApy = new BigNumber(currentTotalFees.feesPaid)
+    .minus(new BigNumber(totalFees3daysAgo.feesPaid))
     .times(365)
-    .times(tmpPrice)
-    .div(tmpLpTVL);
+    .div(3)
+    .times(linearPrice)
+    .div(lpTvl);
   // Liquidity Pool APY
   return lpApy.toFixed();
 }
@@ -76,12 +75,10 @@ export async function getStakingApy() {
   const price30DaysAgo = await queryPriceBefore(targetTime);
   const latestPriceBN = new BigNumber(latestPrice.price);
   const price30DaysAgoBN = new BigNumber(price30DaysAgo.price);
-  const days = new BigNumber(24 * 60 * 60 * 1000000000 * 30);
-  const times1 = new BigNumber(24 * 60 * 60 * 1000000000 * 365);
   const apy = latestPriceBN
     .minus(price30DaysAgoBN)
     .div(price30DaysAgoBN)
-    .times(times1)
-    .div(days);
+    .times(365)
+    .div(30);
   return apy.toFixed();
 }
