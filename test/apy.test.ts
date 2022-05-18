@@ -1,3 +1,4 @@
+import { SECOND } from './../src/consts';
 import {
   getStakingApy,
   getLiquidityPoolApy,
@@ -5,7 +6,6 @@ import {
   SDK_ENV,
 } from '../src';
 
-const SECOND = 1000;
 jest.setTimeout(20 * SECOND);
 
 describe('apy testing', () => {

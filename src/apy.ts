@@ -1,3 +1,4 @@
+import { ONE_NEAR_IN_YOCTO, DAY_TO_NANOSECOND } from './consts';
 import { TotalSwapFees } from './types';
 import { BigNumber } from 'bignumber.js';
 import { getClient, getSummaryFromContract } from './helper';
@@ -50,16 +51,14 @@ export async function getLiquidityPoolApy(): Promise<string> {
   let summary = await getSummaryFromContract();
   const linearAmount = new BigNumber(summary.lp_staked_share!);
   const nearAmount = new BigNumber(summary.lp_near_amount!);
-  const linearPrice = new BigNumber(summary.ft_price!).div(
-    1000000000000000000000000
-  );
+  const linearPrice = new BigNumber(summary.ft_price!).div(ONE_NEAR_IN_YOCTO);
   const lpTvl = linearAmount.times(linearPrice).plus(nearAmount);
   const currentTotalFees = await getLatestFeesPaid();
   const threeDaysAgo =
-    Number(currentTotalFees.timestamp) - 3 * 24 * 60 * 60 * 1000000000;
-  const totalFees3daysAgo = await getTargetTimeFeesPaid(threeDaysAgo);
+    Number(currentTotalFees.timestamp) - 3 * DAY_TO_NANOSECOND;
+  const totalFees3DaysAgo = await getTargetTimeFeesPaid(threeDaysAgo);
   const lpApy = new BigNumber(currentTotalFees.feesPaid)
-    .minus(new BigNumber(totalFees3daysAgo.feesPaid))
+    .minus(new BigNumber(totalFees3DaysAgo.feesPaid))
     .times(365)
     .div(3)
     .times(linearPrice)
@@ -70,8 +69,7 @@ export async function getLiquidityPoolApy(): Promise<string> {
 
 export async function getStakingApy() {
   const latestPrice = await queryLatestPriceFromSubgraph();
-  const targetTime =
-    Number(latestPrice.timestamp) - 30 * 24 * 60 * 60 * 1000000000;
+  const targetTime = Number(latestPrice.timestamp) - 30 * DAY_TO_NANOSECOND;
   const price30DaysAgo = await queryPriceBefore(targetTime);
   const latestPriceBN = new BigNumber(latestPrice.price);
   const price30DaysAgoBN = new BigNumber(price30DaysAgo.price);

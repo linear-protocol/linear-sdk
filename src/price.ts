@@ -1,4 +1,4 @@
-import { ONE_NEAR_IN_YOCTO } from './consts';
+import { ONE_NEAR_IN_YOCTO, SECOND, SECOND_TO_NANOSECOND } from './consts';
 import { BigNumber } from 'bignumber.js';
 import { LatestPriceFromContract } from './types';
 import { getClient, loadContract } from './helper';
@@ -30,7 +30,7 @@ async function queryLatestPriceFromContract(): Promise<
   const price = await contract.ft_price();
   return {
     price: Number(new BigNumber(price).dividedBy(ONE_NEAR_IN_YOCTO).toFixed()),
-    timestamp: Date.now() * 1000000,
+    timestamp: Date.now() * (SECOND_TO_NANOSECOND / SECOND),
   };
 }
 
