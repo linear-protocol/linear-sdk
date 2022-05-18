@@ -6,7 +6,7 @@ import gql from 'graphql-tag';
 
 async function getLatestFeesPaid(): Promise<TotalSwapFees> {
   const getLatestQuery = gql`
-    query ToTalSwapFeesQuery {
+    {
       totalSwapFees(first: 1, orderBy: timestamp, orderDirection: desc) {
         id
         timestamp
@@ -27,13 +27,14 @@ async function getTargetTimeFeesPaid(
   timestamp: number
 ): Promise<TotalSwapFees> {
   const getBeforeFeesPaid = gql`
-    query {
+    {
       totalSwapFees (first: 1, where: {timestamp_gt: "${timestamp}"} ){
         id
         feesPaid
         timestamp
-     }
-  }`;
+      }
+    }
+  `;
   const client = getClient();
   let data = await client.query(getBeforeFeesPaid).toPromise();
   let queryData = data.data;

@@ -12,12 +12,13 @@ export async function getFirstStakingTime(
   accountid: string
 ): Promise<StakeTime> {
   const getStakeTimeQuery = gql`
-    query {
+    {
       users (first: 1, where: {id: "${accountid}"} ){
-      id
-      firstStakingTime
+        id
+        firstStakingTime
+      }
     }
-  }`;
+  `;
   const client = getClient();
   let data = await client.query(getStakeTimeQuery).toPromise();
   let queryData = data.data;
@@ -29,7 +30,7 @@ export async function getFirstStakingTime(
 
 async function getTransferIncome(accountId: string) {
   const getTransferEvent = gql`
-    query {
+    {
       users(first: 1, where:{id:"${accountId}"}) {
         id
         transferedIn {
@@ -41,7 +42,8 @@ async function getTransferIncome(accountId: string) {
           timestamp
         }
       }
-  }`;
+    }
+  `;
   const client = getClient();
   let data = await client.query(getTransferEvent).toPromise();
   let queryData = data.data;
@@ -73,7 +75,7 @@ export async function getStakingRewards(
   includingFees: boolean = false
 ): Promise<string> {
   const getIncomeQuery = gql`
-    query {
+    {
       users (first: 1, where: {id: "${accountId}"} ){
         id
         mintedLinear
@@ -82,7 +84,8 @@ export async function getStakingRewards(
         unstakeReceivedNear
         feesPaid
       }
-    }`;
+    }
+  `;
   const client = getClient();
   let data = await client.query(getIncomeQuery).toPromise();
   let queryData = data.data.users[0];
