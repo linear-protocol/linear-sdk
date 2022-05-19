@@ -2,7 +2,7 @@
   "name": "linear-sdk",
   "author": "LiNEAR Protocol",
   "module": "./dist/linear-sdk.esm.js",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "license": "MIT",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
