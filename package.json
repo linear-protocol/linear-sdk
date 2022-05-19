@@ -1,0 +1,66 @@
+{
+  "name": "linear-sdk",
+  "author": "LiNEAR Protocol",
+  "module": "./dist/linear-sdk.esm.js",
+  "version": "0.1.0",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test",
+    "prepare": "tsdx build && husky install",
+    "size": "size-limit",
+    "analyze": "size-limit --why"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "babel-register": "^6.26.0",
+    "bignumber.js": "^9.0.2",
+    "graphql": "^16.4.0",
+    "isomorphic-unfetch": "^3.1.0",
+    "near-api-js": "^0.44.2",
+    "node-fetch": "^3.2.3",
+    "react": "^17.0.2",
+    "urql": "^2.2.0"
+  },
+  "devDependencies": {
+    "@size-limit/preset-small-lib": "^7.0.8",
+    "@types/big.js": "^6.1.3",
+    "@types/bignumber.js": "^5.0.0",
+    "@types/react": "^17.0.2",
+    "graphql-tag": "^2.12.6",
+    "husky": "^7.0.0",
+    "size-limit": "^7.0.8",
+    "tsdx": "^0.14.1",
+    "tslib": "^2.4.0",
+    "typescript": "^4.6.4"
+  },
+  "resolutions": {
+    "node-notifier": "^8.0.1"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "size-limit": [
+    {
+      "path": "./dist/linear-sdk.cjs.production.min.js",
+      "limit": "10 KB"
+    },
+    {
+      "path": "./dist/linear-sdk.esm.js",
+      "limit": "10 KB"
+    }
+  ]
+}
