@@ -52,7 +52,7 @@ async function getTransferIncome(accountId: string) {
 
 export async function getStakingRewards(
   accountId: string,
-  includingFees: boolean = false
+  excludingFees: boolean = false
 ): Promise<string> {
   const getIncomeQuery = gql`
     {
@@ -70,9 +70,11 @@ export async function getStakingRewards(
   if (!data) {
     throw new Error('Failed to query user');
   }
-  let user = data.data.users[0];
+  let user = data.users[0];
 
-  const linearPrice = new BigNumber(await queryLatestPriceFromSubgraph());
+  const linearPrice = new BigNumber(
+    (await queryLatestPriceFromSubgraph()).price
+  );
   const mintedLinear = new BigNumber(user.mintedLinear);
   const stakedNear = new BigNumber(user.stakedNear);
   const unstakedLinear = new BigNumber(user.unstakedLinear);
@@ -88,7 +90,7 @@ export async function getStakingRewards(
     .plus(unstakeReceivedNEAR)
     .plus(transferReward);
 
-  if (includingFees) {
+  if (!excludingFees) {
     const rewardFinal = reward.plus(feesPaid);
     return rewardFinal.toFixed();
   } else {
