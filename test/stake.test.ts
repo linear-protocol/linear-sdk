@@ -18,6 +18,11 @@ describe('stake', () => {
         expectTime: '1648137226877012106',
         expectedRewards: 0.07997933,
       },
+      {
+        accountId: 'system', // the `system` account wouldn't stake to LiNEAR
+        expectTime: undefined,
+        expectedRewards: 0,
+      },
     ];
     const testnetAccountInfos = [
       {
@@ -28,7 +33,12 @@ describe('stake', () => {
       {
         accountId: '123x.testnet',
         expectTime: '1652088807317086867',
-        expectedRewards: 0.05567456
+        expectedRewards: 0.05567456,
+      },
+      {
+        accountId: 'system', // the `system` account wouldn't stake to LiNEAR
+        expectTime: undefined,
+        expectedRewards: 0,
       },
     ];
 
@@ -37,14 +47,18 @@ describe('stake', () => {
       const firstStakingTime = await getFirstStakingTime(accountInfo.accountId);
       expect(firstStakingTime).toEqual(accountInfo.expectTime);
       const rewards = await getStakingRewards(accountInfo.accountId);
-      expect(Number(rewards)).toBeGreaterThanOrEqual(accountInfo.expectedRewards * 10 ** 24);
+      expect(Number(rewards)).toBeGreaterThanOrEqual(
+        accountInfo.expectedRewards * 10 ** 24
+      );
     }
     changeSDKEnvironment(SDK_ENV.TESTNET);
     for (const accountInfo of testnetAccountInfos) {
       const firstStakingTime = await getFirstStakingTime(accountInfo.accountId);
       expect(firstStakingTime).toEqual(accountInfo.expectTime);
       const rewards = await getStakingRewards(accountInfo.accountId);
-      expect(Number(rewards)).toBeGreaterThanOrEqual(accountInfo.expectedRewards * 10 ** 24);
+      expect(Number(rewards)).toBeGreaterThanOrEqual(
+        accountInfo.expectedRewards * 10 ** 24
+      );
     }
   });
 });

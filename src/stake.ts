@@ -14,8 +14,7 @@ export async function getFirstStakingTime(accountId: string): Promise<string> {
   const client = getClient();
   let { data } = await client.query(getStakeTimeQuery).toPromise();
   if (data) {
-    const { firstStakingTime } = data.users[0];
-    return firstStakingTime;
+    return data.users[0]?.firstStakingTime;
   } else {
     throw new Error('Failed to query first staking time');
   }
@@ -71,6 +70,10 @@ export async function getStakingRewards(
     throw new Error('Failed to query user');
   }
   let user = data.users[0];
+  // If the user has no relevant operations before, return 0
+  if (!user) {
+    return new BigNumber(0).toFixed();
+  }
 
   const linearPrice = new BigNumber(
     (await queryLatestPriceFromSubgraph()).price
