@@ -45,6 +45,9 @@ async function getTargetTimeFeesPaid(
   }
 }
 
+/**
+ * @deprecated
+ */
 export async function getLiquidityPoolApy(): Promise<string> {
   let summary = await getSummaryFromContract();
   const linearAmount = new BigNumber(summary.lp_staked_share!);
@@ -65,16 +68,13 @@ export async function getLiquidityPoolApy(): Promise<string> {
   return lpApy.toFixed();
 }
 
-export async function getStakingApy() {
+export async function getStakingApy(): Promise<string> {
   const latestPrice = await queryLatestPriceFromSubgraph();
   const targetTime = Number(latestPrice.timestamp) - 30 * DAY_TO_NANOSECOND;
   const price30DaysAgo = await queryPriceBefore(targetTime);
   const latestPriceBN = new BigNumber(latestPrice.price);
   const price30DaysAgoBN = new BigNumber(price30DaysAgo.price);
-  const apy = latestPriceBN
-    .minus(price30DaysAgoBN)
-    .div(price30DaysAgoBN)
-    .times(365)
-    .div(30);
-  return apy.toFixed();
+  const apy =
+    Math.pow(latestPriceBN.div(price30DaysAgoBN).toNumber(), 365 / 30) - 1;
+  return apy.toString();
 }
