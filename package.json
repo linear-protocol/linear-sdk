@@ -16,7 +16,8 @@
     "test": "tsdx test",
     "prepare": "tsdx build && husky install",
     "size": "size-limit",
-    "analyze": "size-limit --why"
+    "analyze": "size-limit --why",
+    "np": "yarn build && npx np --no-tests"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
