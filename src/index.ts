@@ -3,7 +3,7 @@ export {
   changeSDKEnvironment,
   setLiNearSDKConfig,
   getLiNearSDKConfig,
-  changeSubgraphUrl,
+  changeSubgraphApiUrl,
 } from './config';
 
 export { SDK_ENV, LiNearSDKConfig } from './config/type';
