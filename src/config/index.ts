@@ -31,7 +31,7 @@ function setLiNearSDKConfig(config: LiNearSDKConfig) {
 }
 
 /**
- * change subgraph URL
+ * change subgraph API URL
  */
 function changeSubgraphApiUrl(apiUrl: string) {
   const config = getLiNearSDKConfig();
