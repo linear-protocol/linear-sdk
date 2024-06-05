@@ -12,7 +12,7 @@ const connectConfig: ConnectConfig = {
 };
 
 const apiUrl =
-  'https://api.thegraph.com/subgraphs/name/linear-protocol/linear-testnet';
+  'https://api.studio.thegraph.com/query/76854/linear-testnet/version/latest';
 
 const contractId = 'linear-protocol.testnet';
 
