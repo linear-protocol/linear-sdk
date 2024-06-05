@@ -23,11 +23,27 @@ function getLiNearSDKConfig(): LiNearSDKConfig {
 }
 
 /**
- * custom configauation for LiNear SDK
+ * custom configuration for LiNear SDK
  * @param config custom config
  */
 function setLiNearSDKConfig(config: LiNearSDKConfig) {
   SDK_CUSTOM_CONFIG = config;
 }
 
-export { changeSDKEnvironment, getLiNearSDKConfig, setLiNearSDKConfig };
+/**
+ * change subgraph URL
+ */
+function changeSubgraphUrl(apiUrl: string) {
+  const config = getLiNearSDKConfig();
+  setLiNearSDKConfig({
+    ...config,
+    apiUrl,
+  });
+}
+
+export {
+  changeSDKEnvironment,
+  getLiNearSDKConfig,
+  setLiNearSDKConfig,
+  changeSubgraphUrl,
+};

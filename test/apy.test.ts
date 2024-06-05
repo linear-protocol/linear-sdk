@@ -1,5 +1,5 @@
 import { SECOND } from './../src/consts';
-import { getStakingApy, changeSDKEnvironment, SDK_ENV } from '../src';
+import { getStakingApy, changeSDKEnvironment, SDK_ENV, setLiNearSDKConfig, getLiNearSDKConfig } from '../src';
 
 jest.setTimeout(20 * SECOND);
 
