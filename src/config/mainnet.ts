@@ -12,7 +12,7 @@ const connectConfig: ConnectConfig = {
 };
 
 const apiUrl =
-  'https://gateway-arbitrum.network.thegraph.com/api/37909ceac34946d62194858b55567dfe/subgraphs/id/H5F5XGL2pYCBY89Ycxzafq2RkLfqJvM47X533CwwPNjg';
+  'https://api.studio.thegraph.com/query/76854/linear/version/latest';
 
 const contractId = 'linear-protocol.near';
 
