@@ -1,5 +1,10 @@
 // env
-export { changeSDKEnvironment, setLiNearSDKConfig } from './config';
+export {
+  changeSDKEnvironment,
+  setLiNearSDKConfig,
+  getLiNearSDKConfig,
+  changeSubgraphApiUrl,
+} from './config';
 
 export { SDK_ENV, LiNearSDKConfig } from './config/type';
 

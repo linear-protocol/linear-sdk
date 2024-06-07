@@ -11,7 +11,8 @@ const connectConfig: ConnectConfig = {
   headers: {},
 };
 
-const apiUrl = 'https://api.thegraph.com/subgraphs/name/linear-protocol/linear';
+const apiUrl =
+  'https://api.studio.thegraph.com/query/76854/linear/version/latest';
 
 const contractId = 'linear-protocol.near';
 
